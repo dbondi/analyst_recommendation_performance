@@ -99,12 +99,12 @@ def get_recommendations_performance(tickers,start,end,performance_test_period,ea
                         
                         if not isinstance(df_firm_perf.at[firm,grade],np.ndarray):
                             df_firm_perf.at[firm,grade] = np.array([performance])
-                            df_time_total.at[firm,grade] = time_dif
+                            df_time_total.at[firm,grade] = np.array([time_dif])
                         else:
                             temp_val_1 = df_firm_perf.at[firm,grade]
                             temp_val_2 = df_time_total.at[firm,grade]
                             df_firm_perf.at[firm,grade] = np.append(temp_val_1,performance)
-                            df_time_total.at[firm,grade] = temp_val_2 + time_dif
+                            df_time_total.at[firm,grade] = np.append(temp_val_2,time_dif)
 
     return df_firm_perf,df_time_total
 
@@ -164,27 +164,22 @@ def calculate_performance(data,performance_test_period,date,next_date,firm,to_gr
     data_type
         price: return price
 
-        plynch: return peter lynch fairvalue TODO
-
-        eps: return earnings per share TODO
-
     metric
-        mean: return mean rate of return of a firms stock picks, only use with normal 
-
+        mean: return mean rate of return of a firms stock picks, only use with normal convert_type
 
         geometric mean: return geometric average rate of return of a firms stock picks
 
     min_recommendations
-        dictionary: min number of recommendations for each recommndation type respectively. Firms without min for any recommendation will be removed. Example {Strong Buy:0,Buy:10,Hold:10,Sell:10,Strong Sell:0}
-        int: min number of total recommendations for all types. Firms without min recommendations will be removed Example 10
+        dictionary: min number of recommendations for each recommndation type respectively. Firms without min for any recommendation type will be removed. Example {Strong Buy:0,Buy:10,Hold:10,Sell:10,Strong Sell:0}
+        int: min number of total recommendations for all types. Firms without min recommendations will be removed Example: 10
 
     convert_type 
         normal:  convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} 
-            includes are recommednation types simplist convertion
+            includes all recommednation types
         simple:  convert recommendations to {Sell, Hold, Buy} 
             groups more confident recommedations together
         reduced: convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} 
-            same as normal but doesnt consider longer-term buy, specultive buy, specultive sell
+            same as normal but doesnt consider 'longer-term buy', 'specultive buy', 'specultive sell'
 
     save
         str: location to save dataframe as csv
@@ -273,7 +268,7 @@ def measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',perf
                     sum_log = np.sum(arr_log)
 
                     #get total time in seconds 
-                    time_of_investments = df_time_total.at[firm_name,rec]
+                    time_of_investments = np.sum(df_time_total.at[firm_name,rec])
                     #get return per year
                     seconds_in_year = 31622400.0
                     geometric_avg_log = sum_log*seconds_in_year/time_of_investments
@@ -318,10 +313,10 @@ if __name__ == '__main__':
     #Tests
 
     #get recommendations of firms for stocks with 50 billion market cap or more
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='TestResults/Test1.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='TestResults/Test1.csv',verbose=True)
 
     #get recommendations of firms for stocks with 10 billion to 20 billion market cap
-    measure_firm_performance(tickers=get_tickers_filtered(,mktcap_min=10e3,mktcap_max=20e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='TestResults/Test2.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=10e3,mktcap_max=20e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='TestResults/Test2.csv',verbose=True)
     
     #get recommendations of firms for stocks with 1 billion market cap or more, and in Basic Industries Sector
     measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=1e3,sectors=SectorConstants.BASICS),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='TestResults/Test3.csv',verbose=True)
