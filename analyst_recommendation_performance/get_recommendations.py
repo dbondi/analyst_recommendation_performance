@@ -24,17 +24,6 @@ def get_recommendations(ticker,convert_type='normal'):
 
     return yf_recommendations_df
 
-"""
-    many firms include different terms for stock recommendations, this function attempts to map these terms to a smaller set of generally understood terms
-
-    convertion type 
-        normal:  convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} 
-            includes are recommednation types simplist convertion
-        simple:  convert recommendations to {Sell, Hold, Buy} 
-            groups more confident recommedations together
-        reduced: convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} 
-            same as normal but doesnt consider longer-term buy, specultive buy, specultive sell
-"""
 
 def get_convert_type_keys(convert_type='normal'):
     if convert_type == 'normal':
@@ -46,6 +35,17 @@ def get_convert_type_keys(convert_type='normal'):
     else:
         raise ValueError('Invalid convert type')
 
+"""
+    many firms include different terms for stock recommendations, this function attempts to map these terms to a smaller set of generally understood terms
+
+    convertion type 
+        normal:  convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} 
+            includes are recommednation types simplist convertion
+        simple:  convert recommendations to {Sell, Hold, Buy} 
+            groups more confident recommedations together
+        reduced: convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} 
+            same as normal but doesnt consider longer-term buy, specultive buy, specultive sell
+"""
 def normalize_recommendations(rec,convert_type='normal'):
     #convert to lower case
     rec = rec.lower()
@@ -128,4 +128,4 @@ def normalize_recommendations(rec,convert_type='normal'):
 
 
 if __name__ == '__main__':
-    get_recommendations('MSFT',convert_type='normal')
+    print(get_recommendations('MSFT',convert_type='normal'))
