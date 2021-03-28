@@ -1,5 +1,7 @@
 # analyst-recommendation-performance
- 
+
+# Overview 
+
 Knowing whether or not to heed the anvice of a stock analyst when they downgrade a stock you own from buy to sell can be quite difficult, the stock might move down the same day this recommendation is announced but knowing whether or not this analyst will be right in the long term is unclear. Many analyst issue dozens of recommendations a year so tracking their historical performance may shed light on the importance of this recommendations. This library hopes to solve this problem by offering highly tunable functions that help measure analyst performance analytically and visually.
 
 The ratings and pricing data are acquired by using the https://github.com/ranaroussi/yfinance library which scrapes ratings that appear on yahoo finance. 
@@ -10,7 +12,6 @@ measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data_typ
 ```
 Returns a Pandas Dataframe containing analysts performance for each type of recommendation
 
-Example output:
 | | Sell | Hold | Buy
 | --- | --- | --- | --- |
 Citigroup | 0.14204269121582458 | 0.1627528422825344 | 0.1719686059278489
@@ -45,6 +46,12 @@ Keefe Bruyette & Woods | 0.13667645861095834 | 0.20706073546129256 | 0.118170651
 Since there are many non-intuitive paramters I will go into detial about each one below.
 
 ### tickers
+
+In order to get recommendations one must specify which tickers they want the recommendation to come from. A larger set is perferrable to get a large sample size of recommendations. I have included the library https://github.com/dbondi/get_all_tickers to make it easy to search for a large number of tickers based on various filters.
+
+### start and end
+
+These are the dates
 
 I have found 49 different terminologies analysts use to represent their recommendation for a stock this library maps these terms to a smaller and more general set of terms Examples: {Strong Sell, Sell, Hold, Buy, Strong Buy}, {Sell, Hold, Buy}, this library allows for multiple mapping conventions that the user can choose from. 
 
