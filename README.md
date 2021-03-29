@@ -56,7 +56,7 @@ Only recommendations that fall between these dates will be analysed.
 measure_firm_performance(start='2012-01-01',end='2020-01-01')
 ```
 ### data_type
-What data is used to measure performance write now only stock 'price' is valid in the future EPS and Peter Lynch's fair value will be options
+'price': The performance of a stock is measured by the percent change in the price.
 ```
 measure_firm_performance(data_type='price')
 ```
@@ -99,18 +99,11 @@ measure_firm_performance(min_recommendations={Strong Buy:0,Buy:10,Hold:10,Sell:1
 ```
 measure_firm_performance(min_recommendations=21)
 ```
-I have found 49 different terminologies analysts use to represent their recommendation for a stock this library maps these terms to a smaller and more general set of terms Examples: {Strong Sell, Sell, Hold, Buy, Strong Buy}, {Sell, Hold, Buy}, this library allows for multiple mapping conventions that the user can choose from. 
 
-## Schemes for Measuring Performance
+### save
+str: location to save dataframe as csv<br/>
+None: to not save<br/>
 
-The performance of a stock is measured by the percent change in a given metric, right now just price, from the start to the end of a given period. The start of the period is which the recommendation is given; the users has two options for when the end of the period should occur, 1. When a certain length of time is reached. 2. When a certian length of time is reach or when a new recommendation from the same analyst is given, which ever comes first. 
-
-If the first option is choosen then the performance of all recommendations will be over a constant length of time this means its sensible to measure the total performance with either the mean of a the analysts recommendations or the geometic mean of a the analysts recommendations.
-
-If the second option is choosen then the performance of an analysts recommendations will be over different lengths of time so its only sensible to measure the time weighted geometic mean.
-
-Note: The second option seems to be the better choice as analysts typically issue changes to stock recommendations and the fairest way to measure performance is probably by acting accordingly to new recommendations.
-
-
-Right now the library only looks at stock price to measure the performance however in the future I plan on implementing EPS and Peter Lynch's fair value metric.
-
+### verbose
+True: print number of tickers and when each ticker is gathering data
+False: dont print info
