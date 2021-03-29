@@ -7,11 +7,14 @@ Knowing whether or not to heed the anvice of a stock analyst when they downgrade
 The ratings and pricing data are acquired by using the https://github.com/ranaroussi/yfinance library which scrapes ratings that appear on yahoo finance. 
 
 ## Methods and Classes
+
+### measure_firm_performance
 ```
 measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data_type='price',performance_test_period=24,early_stop=True,metric='geometric mean',convert_type='simple',min_recommendations=21,save=None,verbose=False)
 ```
 Returns a Pandas Dataframe containing analysts performance for each type of recommendation type. Performance of stocks are outputed as annualized returns<br/>
-Example:<br/>
+
+Examples:<br/>
 ```
 measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save=None,verbose=False)
 ```
@@ -43,6 +46,21 @@ Pacific Crest | 0.29100878275515196 | 0.2194417183625763 | 0.27617568339748555
 Wedbush | 0.3952764905316153 | 0.2581466844237046 | 0.21827112784477265
 Macquarie | 0.2229338292648324 | 0.1768223184252471 | 0.15699016907313768
 Keefe Bruyette & Woods | 0.13667645861095834 | 0.20706073546129256 | 0.11817065130614157
+
+### graph_performance
+```
+graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations=21,convert_type='simple',verbose=False)
+```
+Outputs graph as either histogram or 2d plot, based on graph_type.<br/>
+
+Examples:<br/>
+```
+graph_performance(graph_type='2d',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=True,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
+```
+
+```
+graph_performance(graph_type='histogram',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
+```
 
 ## Params
 
@@ -104,6 +122,7 @@ measure_firm_performance(min_recommendations=21)
 ```
 
 ### save
+This is only used by **measure_firm_performance**
 str: location to save dataframe as csv<br/>
 None: to not save<br/>
 ```
@@ -116,3 +135,8 @@ False: dont print info
 ```
 measure_firm_performance(verbose=True)
 ```
+
+### graph_type
+This is only used by **graph_performance**
+'2d': plot analyst recommendation performance on 2d graph. <br/>
+'histogram': plot analyst recommendation performance on histogram graph, can only be used when ***early_stop*** is false
