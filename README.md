@@ -103,7 +103,13 @@ measure_firm_performance(min_recommendations=21)
 ### save
 str: location to save dataframe as csv<br/>
 None: to not save<br/>
+```
+measure_firm_performance(save='analyst_recommendation_performance/TestResults/Test1.csv')
+```
 
 ### verbose
-True: print number of tickers and when each ticker is gathering data
+True: print number of tickers and when each ticker is gathering data<br/>
 False: dont print info
+```
+measure_firm_performance(verbose=True)
+```
