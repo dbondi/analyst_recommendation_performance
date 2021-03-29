@@ -99,7 +99,7 @@ measure_firm_performance(early_stop=True)
 ```
 
 ### metric
-'mean': returns mean rate of return of an analyst stock picks, only should be used when 'early_stop' is False as one should measure performance over a constant length of time to get valid results.<br/>
+'mean': returns mean rate of return of an analyst's stock picks, only should be used when 'early_stop' is False as one should measure performance over a constant length of time to get valid results.<br/>
 'geometric mean': returns geometric average rate of return.
 ```
 measure_firm_performance(metric='geometric mean')
