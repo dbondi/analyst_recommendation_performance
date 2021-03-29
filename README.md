@@ -10,7 +10,7 @@ The ratings and pricing data are acquired by using the https://github.com/ranaro
 ```
 measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data_type='price',performance_test_period=24,early_stop=True,metric='geometric mean',convert_type='simple',min_recommendations=21,save=None,verbose=False)
 ```
-Returns a Pandas Dataframe containing analysts performance for each type of recommendation
+Returns a Pandas Dataframe containing analysts performance for each type of recommendation type
 
 | | Sell | Hold | Buy
 | --- | --- | --- | --- |
@@ -43,16 +43,62 @@ Keefe Bruyette & Woods | 0.13667645861095834 | 0.20706073546129256 | 0.118170651
 
 ## Params
 
-Since there are many non-intuitive paramters I will go into detial about each one below.
+Since there are many non-intuitive paramters I will go into detail about each one below.
 
 ### tickers
-
 In order to get recommendations one must specify which tickers they want the recommendation to come from. A larger set is perferrable to get a large sample size of recommendations. I have included the library https://github.com/dbondi/get_all_tickers to make it easy to search for a large number of tickers based on various filters.
-
+```
+measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3))
+```
 ### start and end
+Only recommendations that fall between these dates will be analysed.
+```
+measure_firm_performance(start='2012-01-01',end='2020-01-01')
+```
+### data_type
+What data is used to measure performance write now only stock 'price' is valid in the future EPS and Peter Lynch's fair value will be options
+```
+measure_firm_performance(data_type='price')
+```
+### performance_test_period
+Integer type representing valud number of months after recommendation is announced when performance is measured
+```
+measure_firm_performance(performance_test_period=12)
+```
+### early_stop
+True: test every recommendation until end of performance_test_period or until new recommendation, whichever comes first.<br/>
+False: test every recommendation until end of performance_test_period.<br/>
 
-These are the dates
+Note: True seems to be the better choice as analysts typically issue changes to stock recommendations and the fairest way to measure performance is probably by acting accordingly to new recommendations.
+```
+measure_firm_performance(early_stop=True)
+```
 
+### metric
+'mean': returns mean rate of return of a analyst stock picks, only should be used when 'early_stop' is False as one should measure performance over a constant length of time to get valid results.<br/>
+'geometric mean': returns geometric average rate of return.
+```
+measure_firm_performance(metric='geometric mean')
+```
+
+### convert_type
+I have found 49 different terminologies analysts use to represent their recommendation for a stock, this library maps these terms to a smaller and more general set of terms. These are the various mapping conventions that the user can choose from. <br/>
+
+normal:  convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} includes all recommednation types<br/>
+simple:  convert recommendations to {Sell, Hold, Buy} groups more confident recommedations together<br/>
+reduced: convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} same as normal but doesnt consider 'longer-term buy', 'specultive buy', 'specultive sell'<br/>
+```
+measure_firm_performance(convert_type='simple')
+```
+### min_recommendations
+dictionary: min number of recommendations for each recommndation type respectively. Firms without min for any recommendation type will be removed.<br/>
+int: min number of total recommendations for all types. Firms without min recommendations will be removed<br/>
+```
+measure_firm_performance(min_recommendations={Strong Buy:0,Buy:10,Hold:10,Sell:10,Strong Sell:0})
+```
+```
+measure_firm_performance(min_recommendations=21)
+```
 I have found 49 different terminologies analysts use to represent their recommendation for a stock this library maps these terms to a smaller and more general set of terms Examples: {Strong Sell, Sell, Hold, Buy, Strong Buy}, {Sell, Hold, Buy}, this library allows for multiple mapping conventions that the user can choose from. 
 
 ## Schemes for Measuring Performance
