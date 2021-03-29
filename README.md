@@ -59,8 +59,6 @@ graph_performance(graph_type='2d',tickers=get_tickers_filtered(mktcap_min=30e3),
 ```
 ![2d plot](https://user-images.githubusercontent.com/30188191/112783523-81bc8880-901d-11eb-9d1a-d38937b74110.PNG)
 
-For 2d plots, each line represents the geometric average rate of return of a recommendation type overtime. Each recommendation type is annualized separately so some recommendation types might seem like they are more volatility, but this is usually because firms have fewer recommendations of a certain type than others. Additionally, the lines start at 1 instead of 0 so that the Y axis can be adjusted logarithmically.
-
 ```
 graph_performance(graph_type='histogram',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
 ```
