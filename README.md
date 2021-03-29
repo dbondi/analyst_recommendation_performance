@@ -92,7 +92,7 @@ measure_firm_performance(performance_test_period=12)
 ```
 ### early_stop
 True: Test every recommendation until the end of ***performance_test_period*** or until a new recommendation by the same analyst, whichever comes first.<br/>
-False: Test every recommendation until end of ***performance_test_period****.<br/>
+False: Test every recommendation until end of ***performance_test_period***.<br/>
 
 Note: This parameter has a very large effect on the result. Its ussually sensible to leave it as True.
 ```
