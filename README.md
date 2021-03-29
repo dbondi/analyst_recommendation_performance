@@ -91,10 +91,9 @@ Integer type representing number of months after a recommendation is announced w
 measure_firm_performance(performance_test_period=12)
 ```
 ### early_stop
-True: test every recommendation until the end of performance_test_period or until the new recommendation, whichever comes first.<br/>
-False: test every recommendation until end of performance_test_period.<br/>
+True: Test every recommendation until the end of performance_test_period or until the new recommendation, whichever comes first.<br/>
+False: Test every recommendation until end of performance_test_period.<br/>
 
-Note: True seems to be the better choice as analysts typically issue changes to stock recommendations and the fairest way to measure performance is probably by acting accordingly to new recommendations.
 ```
 measure_firm_performance(early_stop=True)
 ```
