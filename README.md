@@ -10,7 +10,7 @@ The ratings and pricing data are acquired by using the https://github.com/ranaro
 ```
 measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data_type='price',performance_test_period=24,early_stop=True,metric='geometric mean',convert_type='simple',min_recommendations=21,save=None,verbose=False)
 ```
-Returns a Pandas Dataframe containing analysts performance for each type of recommendation type<br/>
+Returns a Pandas Dataframe containing analysts performance for each type of recommendation type. Performance of stocks are outputed as annualized returns<br/>
 Example:<br/>
 ```
 measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save=None,verbose=False)
