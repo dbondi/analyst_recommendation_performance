@@ -122,7 +122,7 @@ measure_firm_performance(min_recommendations=21)
 ```
 
 ### save
-This is only used by **measure_firm_performance**
+This is only used by **measure_firm_performance**<br/>
 str: location to save dataframe as csv<br/>
 None: to not save<br/>
 ```
@@ -137,6 +137,6 @@ measure_firm_performance(verbose=True)
 ```
 
 ### graph_type
-This is only used by **graph_performance**
+This is only used by **graph_performance**<br/>
 '2d': plot analyst recommendation performance on 2d graph. <br/>
 'histogram': plot analyst recommendation performance on histogram graph, can only be used when ***early_stop*** is false
