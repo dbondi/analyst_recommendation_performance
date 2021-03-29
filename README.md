@@ -91,7 +91,7 @@ Integer type representing number of months after a recommendation is announced w
 measure_firm_performance(performance_test_period=12)
 ```
 ### early_stop
-True: Test every recommendation until the end of ***performance_test_period*** or until a new recommendation by the same analyst, whichever comes first.<br/>
+True: Test every recommendation until the end of ***performance_test_period*** or until a new recommendation by the same analyst is announced, whichever comes first.<br/>
 False: Test every recommendation until end of ***performance_test_period***.<br/>
 
 ```
