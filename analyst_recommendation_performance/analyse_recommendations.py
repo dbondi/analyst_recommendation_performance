@@ -354,8 +354,8 @@ def rank_performance(df_firm_performance,recommendation,metric):
 """
 
 def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations=21,convert_type='simple',verbose=False):
-    if early_stop and graph_type !='2d':
-        raise ValueError('Can only suppot graph type 2d when early stop is true')
+    if early_stop and graph_type =='histogram':
+        raise ValueError('Can only suppot graph type histogram when early stop is false')
     if graph_type !='1d' and graph_type !='histogram' and graph_type !='2d':
         raise ValueError('Invalid graph_type')
     convert_keys = get_convert_type_keys(convert_type=convert_type)
