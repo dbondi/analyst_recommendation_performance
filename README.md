@@ -55,9 +55,9 @@ Outputs graph as either histogram or 2d plot, based on graph_type. Results are a
 
 Examples:<br/>
 ```
-graph_performance(graph_type='2d',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=True,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
+graph_performance(graph_type='cdf',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=True,min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',verbose=False)
 ```
-![2d plot](https://user-images.githubusercontent.com/30188191/112783523-81bc8880-901d-11eb-9d1a-d38937b74110.PNG)
+![Societe Generale CDF](https://user-images.githubusercontent.com/30188191/112916780-382c7600-90cf-11eb-98f9-e8adb03bb6fe.PNG)
 
 ```
 graph_performance(graph_type='histogram',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
@@ -139,5 +139,7 @@ measure_firm_performance(verbose=True)
 
 ### graph_type
 This is only used by **graph_performance**<br/>
-'2d': plot analyst recommendation performance on 2d graph. <br/>
-'histogram': plot analyst recommendation performance on histogram graph, can only be used when ***early_stop*** is false
+'cdf': cdf plot of anualized rate of return
+'2d': plot 2d graph of time vs return recommendation performance annualized. <br/>
+'histogram': plot analyst recommendation performance on histogram graph  (***early_stop*** must be False)
+'1d': plot 1d eventplot graph of recommendation performance (***early_stop*** must be False)
