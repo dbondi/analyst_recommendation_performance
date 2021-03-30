@@ -545,7 +545,7 @@ def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='
                     inc = inc + 1
 
             
-            plt.ylabel("Fraction of Data")
+            plt.ylabel("Fraction of the Total Time of All Investments")
             plt.xlabel("Annualize Rate of Return")
 
             
