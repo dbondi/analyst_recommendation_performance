@@ -54,11 +54,13 @@ graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='2020
 Outputs graph as either histogram or 2d plot, based on graph_type. Results are annualized<br/>
 
 Examples:<br/>
-CDF Graph:
+
+CDF Graph<br/>
 ```
 graph_performance(graph_type='cdf',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=True,min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',verbose=False)
 ```
-![Citigroup CDF](https://user-images.githubusercontent.com/30188191/112922221-1dabca00-90da-11eb-96da-44cc543a89f2.PNG)
+![Citigroup CDF](https://user-images.githubusercontent.com/30188191/112922221-1dabca00-90da-11eb-96da-44cc543a89f2.PNG)<br/>
+
 Histogram Graph:
 ```
 graph_performance(graph_type='histogram',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
