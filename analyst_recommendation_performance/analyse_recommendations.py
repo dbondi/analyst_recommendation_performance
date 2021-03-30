@@ -11,6 +11,8 @@ from matplotlib import pyplot as plt
 import matplotlib.ticker
 from datetime import date,datetime
 from dateutil.relativedelta import relativedelta
+from matplotlib import scale as mscale
+from custom_scale import CustomScale
 
 def get_recommendations_performance(tickers,start,end,performance_test_period,early_stop,data_type,convert_type,verbose):
 
@@ -315,7 +317,8 @@ def rank_performance(df_firm_performance,recommendation,metric):
     graph_type:
         'histogram': plot histogram of recommendation performance for a firm (early_stop must be False)
         '1d': plot 1d eventplot graph of recommendation performance (early_stop must be False)
-        '2d': plot 2d graph of time vs return recommendation performance (early_stop must be True)
+        '2d': plot 2d graph of time vs return recommendation performance anualized 
+        'cdf': cdf plot of anualized rate of return
 
     start:
         look at data past start date 'YYYY-MM-DD'
@@ -356,7 +359,7 @@ def rank_performance(df_firm_performance,recommendation,metric):
 def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations=21,convert_type='simple',verbose=False):
     if early_stop and graph_type =='histogram':
         raise ValueError('Can only suppot graph type histogram when early stop is false')
-    if graph_type !='1d' and graph_type !='histogram' and graph_type !='2d':
+    if graph_type !='1d' and graph_type !='histogram' and graph_type !='2d'and graph_type !='cdf':
         raise ValueError('Invalid graph_type')
     convert_keys = get_convert_type_keys(convert_type=convert_type)
     if isinstance(min_recommendations, dict):
@@ -372,7 +375,7 @@ def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='
         raise ValueError('Invalid performance_test_period')
 
     df_firm_perf,df_time_total = get_recommendations_performance(tickers=tickers,start=start,end=end,performance_test_period=performance_test_period,early_stop=early_stop,data_type=data_type,convert_type=convert_type,verbose=verbose)
-
+    
     df_new_firm_perf = df_firm_perf.copy()
     if graph_type == 'histogram':
         plt.style.use('seaborn-deep')
@@ -404,6 +407,8 @@ def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='
             continue
         
         if graph_type=='2d':
+            
+            plt.figure(figsize=(10,6))
             plt.title(firm_name)
             colors = {}   
             if len(convert_keys) == 5:
@@ -427,12 +432,23 @@ def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='
                     
                     #get total time in seconds 
                     time_of_investments = np.sum(df_time_total.at[firm_name,rec])
-
+                    
+                    derivative_array =  np.array([])
                     for perf,time in zip(perf_array,time_array):
+                        if time == 0.0:
+                            derivative_array = np.append(derivative_array,0.1) 
+                        else:
+                            derivative_array = np.append(derivative_array,perf/time)
+                    zipped = zip(perf_array,time_array,derivative_array)
+                    res = sorted(zipped, key = lambda x: x[2],reverse=True)
+                    last_value = 1
+                    for perf,time,der in res:
                         price_sum_log_values = np.append(price_sum_log_values,price_sum_log_values[-1]+np.log(perf+1))
                         time_sum_values = np.append(time_sum_values,time_sum_values[-1]+time/time_of_investments)
-
-                    
+                        
+                        if last_value >= 0.0 and np.log(perf+1) < 0.0:
+                            plt.axvline(x=time_sum_values[-2],color=colors[rec],linestyle='--',linewidth=.5)
+                        last_value = np.log(perf+1)
                     
                     seconds_in_year = 31622400.0
                     price_geo_avg_log_values = price_sum_log_values*seconds_in_year/time_of_investments
@@ -448,8 +464,97 @@ def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='
                     
                         
                     inc = inc + 1
+            
             plt.yscale('log')
             plt.gca().yaxis.set_minor_formatter(matplotlib.ticker.ScalarFormatter())
+            plt.legend(handles=patches)  
+            plt.show()
+
+        
+        
+        elif graph_type=='cdf':
+            
+            plt.figure(figsize=(10,6))
+            plt.title(firm_name)
+            mscale.register_scale(CustomScale)
+
+            colors = {}   
+            if len(convert_keys) == 5:
+                colors = {'Strong Sell':'darkred','Sell':'red','Hold':'gold','Buy':'lightgreen','Strong Buy':'green'}
+            if len(convert_keys) == 3:
+                colors = {'Sell':'red','Hold':'gold','Buy':'green'}
+            inc = 0
+            patches = []
+            
+            min_x = 1.0
+            max_x = -1.0
+            for rec in convert_keys:
+
+                if isinstance(firm_perf[rec],np.ndarray):
+
+                    cdf_values = np.array([])
+                    time_sum_values = np.array([])
+
+                    #array of performances based on recommendation
+                    perf_array = firm_perf[rec]
+                    time_array = df_time_total.at[firm_name,rec]
+
+                    
+                    #get total time in seconds 
+                    time_of_investments = np.sum(df_time_total.at[firm_name,rec])
+                    
+                    derivative_array =  np.array([])
+                    
+                    seconds_in_year = 31622400.0
+                    for perf,time in zip(perf_array,time_array):
+                        if time == 0.0:
+                            derivative_array = np.append(derivative_array,1.0) 
+                        else:
+                            derivative_array = np.append(derivative_array,np.exp(np.log(perf+1)*time/seconds_in_year)-1)
+                    zipped = zip(time_array,derivative_array)
+                    res = sorted(zipped, key = lambda x: x[1])
+
+                    for time,der in res:
+                        if der < min_x:
+                            min_x = der
+                        if der > max_x:
+                            max_x = der 
+                        if len(cdf_values) == 0:
+                            cdf_values = np.append(cdf_values,der)
+                            time_sum_values = np.append(time_sum_values,0)
+                            
+                            cdf_values = np.append(cdf_values,der)
+                            time_sum_values = np.append(time_sum_values,time/time_of_investments)
+                        else:
+                            cdf_values = np.append(cdf_values,der)
+                            time_sum_values = np.append(time_sum_values,time_sum_values[-1])
+                            
+                            cdf_values = np.append(cdf_values,der)
+                            time_sum_values = np.append(time_sum_values,time_sum_values[-1]+time/time_of_investments)
+                        
+                    
+
+                    #price_geo_avg_values = price_geo_avg_values-1.0
+
+                    #plot data
+                    patch = mpatches.Patch(color=colors[rec], label=rec)
+                    patches.append(patch)
+                    
+                    plt.plot(cdf_values,time_sum_values,color=colors[rec])  # Draw a horizontal line
+                        
+                    inc = inc + 1
+
+            
+            plt.ylabel("Fraction of Data")
+            plt.xlabel("Annualize Rate of Return")
+
+            
+            plt.gca().set_xscale('custom')
+            axes = plt.gca()
+            axes.set_xlim([min_x,max_x])
+            axes.set_ylim([0.0,1.0])
+            plt.minorticks_on()
+            plt.grid(True)
             plt.legend(handles=patches)  
             plt.show()
 
@@ -542,7 +647,6 @@ def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='
 
             #plt.legend(handles=patches)  
             plt.show()
-                
 
 
 
@@ -551,23 +655,23 @@ if __name__ == '__main__':
     #Tests
 
     #get recommendations of firms for stocks with 50 billion market cap or more
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test1.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=200e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test11.csv',verbose=True)
 
     #get recommendations of firms for stocks with 10 billion to 20 billion market cap
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=10e3,mktcap_max=20e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test2.csv',verbose=True)
+    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=10e3,mktcap_max=20e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test2.csv',verbose=True)
     
     #get recommendations of firms for stocks with 1 billion market cap or more, and in Basic Industries Sector
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=1e3,sectors=SectorConstants.BASICS),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test3.csv',verbose=True)
+    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=1e3,sectors=SectorConstants.BASICS),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test3.csv',verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using a performance test period of 12
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=12,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test4.csv',verbose=True)
+    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=12,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test4.csv',verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using no early stop
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test5.csv',verbose=True)
+    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test5.csv',verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using 'mean' metric
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test6.csv',verbose=True)
+    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test6.csv',verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using convert type 'normal'
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Strong Sell': 0,'Sell':10,'Hold':10,'Buy':10,'Strong Buy': 0},convert_type='normal',save='analyst_recommendation_performance/TestResults/Test7.csv',verbose=True)
+    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Strong Sell': 0,'Sell':10,'Hold':10,'Buy':10,'Strong Buy': 0},convert_type='normal',save='analyst_recommendation_performance/TestResults/Test7.csv',verbose=True)
     
