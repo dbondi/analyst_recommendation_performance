@@ -59,6 +59,8 @@ graph_performance(graph_type='cdf',tickers=get_tickers_filtered(mktcap_min=30e3)
 ```
 ![Societe Generale CDF](https://user-images.githubusercontent.com/30188191/112916780-382c7600-90cf-11eb-98f9-e8adb03bb6fe.PNG)
 
+In the graph above the Y-axis is the fraction of time of a investment(s) in relation to the total time of all invesments.
+
 ```
 graph_performance(graph_type='histogram',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
 ```
