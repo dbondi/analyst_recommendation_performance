@@ -104,7 +104,7 @@ measure_firm_performance(metric='geometric mean')
 ```
 
 ### convert_type
-I have found 49 different terminologies analysts use to represent their recommendation for a stock, this library maps these terms to a smaller and more general set of terms. These are the various mapping conventions that the user can choose from. <br/>
+I have found 49 different terms analysts use to represent their recommendation for a stock, this library maps these terms to a smaller and more general set of terms. These are the various mapping conventions that the user can choose from. <br/>
 
 normal:  convert recommendations to {Strong sell, Sell, Hold, Buy, Strong Buy} includes all recommendation types<br/>
 simple:  convert recommendations to {Sell, Hold, Buy} groups more confident recommendations together<br/>
