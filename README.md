@@ -55,9 +55,9 @@ Outputs graph as either histogram or 2d plot, based on graph_type. Results are a
 
 Examples:<br/>
 ```
-graph_performance(graph_type='2d',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=True,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
+graph_performance(graph_type='cdf',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=True,min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',verbose=False)
 ```
-![2d plot](https://user-images.githubusercontent.com/30188191/112783523-81bc8880-901d-11eb-9d1a-d38937b74110.PNG)
+![Goldmans Sachs cdf](https://user-images.githubusercontent.com/30188191/112921569-00c2c700-90d9-11eb-9b71-07ade1b8fe63.PNG)
 
 ```
 graph_performance(graph_type='histogram',tickers=get_tickers_filtered(mktcap_min=30e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations={'Sell': 25,'Hold': 25,'Buy': 25},convert_type='simple',verbose=False)
