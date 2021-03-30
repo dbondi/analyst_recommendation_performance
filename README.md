@@ -138,6 +138,8 @@ measure_firm_performance(verbose=True)
 ```
 
 ### graph_type
-This is only used by **graph_performance**<br/>
-'2d': plot analyst recommendation performance on 2d graph. <br/>
-'histogram': plot analyst recommendation performance on histogram graph, can only be used when ***early_stop*** is false
+This is only used by graph_performance
+'cdf': cdf plot of anualized rate of return<br/>
+'histogram': plot analyst recommendation performance on histogram graph (early_stop must be False)<br/>
+'2d': plot 2d graph of time vs return recommendation performance annualized.<br/>
+'1d': plot 1d eventplot graph of recommendation performance (early_stop must be False)
