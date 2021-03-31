@@ -76,7 +76,7 @@ Macquarie | 0.10943040570136198 | 0.11680777972949574 | 0.12556051918816524 | 0.
 ```
 graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='2020-01-01',performance_test_period=24,data_type='price',early_stop=False,min_recommendations=21,convert_type='simple',verbose=False)
 ```
-Outputs graph as either histogram or 2d plot, based on graph_type. Results are annualized<br/>
+Outputs graph as either histogram, cdf, 2d plot, or 1d plot, to help visualize the spread of analyst's recommendation performance, results are annualized.<br/>
 
 Examples:<br/>
 
