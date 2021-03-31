@@ -21,6 +21,7 @@ def get_recommendations(ticker,convert_type='normal'):
 
     #normalize recommendations
     yf_recommendations_df['To Grade'] = yf_recommendations_df['To Grade'].apply(normalize_recommendations, args=(convert_type,))
+    yf_recommendations_df['From Grade'] = yf_recommendations_df['From Grade'].apply(normalize_recommendations, args=(convert_type,))
 
     return yf_recommendations_df
 

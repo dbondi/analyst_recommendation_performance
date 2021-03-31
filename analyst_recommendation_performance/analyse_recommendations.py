@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from matplotlib import scale as mscale
 from custom_scale import CustomScale
 
-def get_recommendations_performance(tickers,start,end,performance_test_period,early_stop,data_type,convert_type,verbose):
+def get_recommendations_performance(tickers,start,end,performance_test_period,early_stop,data_type,convert_type,get_upgrade_downgrade,verbose):
 
     
     convert_type_list = get_convert_type_keys(convert_type=convert_type)
@@ -72,45 +72,96 @@ def get_recommendations_performance(tickers,start,end,performance_test_period,ea
             for firm in yf_recommendations_dict.keys():
                 firm_recommendations = yf_recommendations_dict[firm]
 
-                last_date_df = 0
-                last_to_grade_df = 0
+                # track last grade and date 
+                last_date_val = 0
+                last_to_grade_val = 0
+
+                last2_date_val = 0
+                last2_to_grade_val = 0
                 wait_once = True
-                for date_df, to_grade_df in zip(firm_recommendations['Date'],firm_recommendations['To Grade']):
+                for date_val, to_grade_val in zip(firm_recommendations['Date'],firm_recommendations['To Grade']):
                     
                     if wait_once:
-                        last_date_df = date_df
-                        last_to_grade_df = to_grade_df
+                        last_date_val = date_val
+                        last_to_grade_val = to_grade_val
                         wait_once = False
                         continue
                     else:
                         
-                        result = calculate_performance(data=data,performance_test_period=performance_test_period,date=last_date_df, next_date=date_df, firm=firm, to_grade=last_to_grade_df)
+                        result = calculate_performance(data=data,performance_test_period=performance_test_period,date=last_date_val, next_date=date_val, firm=firm, to_grade=last_to_grade_val)
                         
-                        last_date_df = date_df
-                        last_to_grade_df = to_grade_df
+                        if get_upgrade_downgrade:
+                            if result is not None:
+                                if last2_to_grade_val != last_to_grade_val and last2_to_grade_val != 0 and last_to_grade_val != 'Invalid' and last_to_grade_val != 'Dont Include' and last2_to_grade_val != 'Invalid' and last2_to_grade_val != 'Dont Include':
+                                    new_result = result.copy()
+                                    new_result[2] = last2_to_grade_val + '->' + last_to_grade_val
+                                    results.append(new_result)
+
+                        last2_date_val = last_date_val
+                        last2_to_grade_val = last_to_grade_val
+                        last_date_val = date_val
+                        last_to_grade_val = to_grade_val
                         results.append(result)
-                result = calculate_performance(data=data,performance_test_period=performance_test_period,date=last_date_df, next_date=None, firm=firm, to_grade=last_to_grade_df)
+
+                result = calculate_performance(data=data,performance_test_period=performance_test_period,date=last_date_val, next_date=None, firm=firm, to_grade=last_to_grade_val)
+                
+                if get_upgrade_downgrade:
+                    if result is not None:
+                        if last2_to_grade_val != last_to_grade_val and last2_to_grade_val != 0 and last_to_grade_val != 'Invalid' and last_to_grade_val != 'Dont Include' and last2_to_grade_val != 'Invalid' and last2_to_grade_val != 'Dont Include':
+                            new_result = result.copy()
+                            new_result[2] = last2_to_grade_val + '->' + last_to_grade_val
+                            results.append(new_result)
+
                 results.append(result) 
         else:
-            results = [calculate_performance(data=data,performance_test_period=performance_test_period,date=date_df, next_date=None, firm=firm_df, to_grade=to_grade_df) for date_df, firm_df, to_grade_df in zip(recommendations_df['Date'], recommendations_df['Firm'],recommendations_df['To Grade'])]
+            if get_upgrade_downgrade:
+                #create dictionary which groups all firms recommendations together
+                yf_recommendations_dict = {}
+                for yf_firm in firm_list:
+                    yf_recommendations_dict[yf_firm] = recommendations_df.loc[recommendations_df['Firm'] == yf_firm]
+                
+
+                for firm in yf_recommendations_dict.keys():
+                    firm_recommendations = yf_recommendations_dict[firm]
+
+                    
+                    for date_val, to_grade_val, last_to_grade_val in zip(firm_recommendations['Date'],firm_recommendations['To Grade'],firm_recommendations['From Grade']):
+                        
+                        result = calculate_performance(data=data,performance_test_period=performance_test_period,date=date_val, next_date=None, firm=firm, to_grade=to_grade_val)
+                            
+                        if get_upgrade_downgrade:
+                            if result is not None:
+                                if to_grade_val != last_to_grade_val and last_to_grade_val != 'Invalid' and last_to_grade_val != 'Dont Include' and to_grade_val != 'Invalid' and to_grade_val != 'Dont Include':
+                                    new_result = result.copy()
+                                    new_result[2] = last_to_grade_val + '->' + to_grade_val
+                                    results.append(new_result)
+
+                        results.append(result)
+
+            else:
+                results = [calculate_performance(data=data,performance_test_period=performance_test_period,date=date_val, next_date=None, firm=firm_val, to_grade=to_grade_val) for date_val, firm_val, to_grade_val in zip(recommendations_df['Date'], recommendations_df['Firm'],recommendations_df['To Grade'])]
             
         for result in results:
-                if result is not None:
-                    performance = result[0]
-                    firm = result[1]
-                    grade = result[2]
-                    time_dif = result[3]
+            if result is not None:
+                performance = result[0]
+                firm = result[1]
+                grade = result[2]
+                time_dif = result[3]
+                
+                if grade is not 'Invalid' and grade is not 'Dont Include':
+                    if get_upgrade_downgrade:
+                        if grade not in df_firm_perf.columns:
+                            df_firm_perf[grade] = 0.0
+                            df_time_total[grade] = 0.0
                     
-                    if grade is not 'Invalid' and grade is not 'Dont Include':
-                        
-                        if not isinstance(df_firm_perf.at[firm,grade],np.ndarray):
-                            df_firm_perf.at[firm,grade] = np.array([performance])
-                            df_time_total.at[firm,grade] = np.array([time_dif])
-                        else:
-                            temp_val_1 = df_firm_perf.at[firm,grade]
-                            temp_val_2 = df_time_total.at[firm,grade]
-                            df_firm_perf.at[firm,grade] = np.append(temp_val_1,performance)
-                            df_time_total.at[firm,grade] = np.append(temp_val_2,time_dif)
+                    if not isinstance(df_firm_perf.at[firm,grade],np.ndarray):
+                        df_firm_perf.at[firm,grade] = np.array([performance])
+                        df_time_total.at[firm,grade] = np.array([time_dif])
+                    else:
+                        temp_val_1 = df_firm_perf.at[firm,grade]
+                        temp_val_2 = df_time_total.at[firm,grade]
+                        df_firm_perf.at[firm,grade] = np.append(temp_val_1,performance)
+                        df_time_total.at[firm,grade] = np.append(temp_val_2,time_dif)
 
     return df_firm_perf,df_time_total
 
@@ -197,8 +248,10 @@ def calculate_performance(data,performance_test_period,date,next_date,firm,to_gr
     
 """
 
-def measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data_type='price',performance_test_period=24,early_stop=True,metric='geometric mean',convert_type='simple',min_recommendations=21,save=None,verbose=False):
+def measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data_type='price',performance_test_period=24,early_stop=True,metric='geometric mean',convert_type='simple',min_recommendations=21,save=None,get_upgrade_downgrade=False,verbose=False):
+    
     convert_keys = get_convert_type_keys(convert_type=convert_type)
+
     if metric == 'mean' and early_stop:
         raise Warning('calculating average rate of return over variable period lengths will yield bad results')
     if isinstance(min_recommendations, dict):
@@ -215,7 +268,7 @@ def measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data
     if (not isinstance(performance_test_period,int)) or performance_test_period <= 0:
         raise ValueError('Invalid performance_test_period')
 
-    df_firm_perf,df_time_total = get_recommendations_performance(tickers=tickers,start=start,end=end,performance_test_period=performance_test_period,early_stop=early_stop,data_type=data_type,convert_type=convert_type,verbose=verbose)
+    df_firm_perf,df_time_total = get_recommendations_performance(tickers=tickers,start=start,end=end,performance_test_period=performance_test_period,early_stop=early_stop,data_type=data_type,convert_type=convert_type,get_upgrade_downgrade=get_upgrade_downgrade,verbose=verbose)
 
     df_new_firm_perf = df_firm_perf.copy()
     for firm_name,firm_perf in df_firm_perf.iterrows():
@@ -244,8 +297,8 @@ def measure_firm_performance(tickers=[],start='2012-01-01',end='2020-01-01',data
 
         if found:
             continue
-
-        for rec in convert_keys:
+        
+        for rec in df_firm_perf.columns:
 
             if isinstance(firm_perf[rec],np.ndarray):
 
@@ -379,6 +432,7 @@ def graph_performance(graph_type='histogram',tickers=[],start='2012-01-01',end='
     df_new_firm_perf = df_firm_perf.copy()
     if graph_type == 'histogram':
         plt.style.use('seaborn-deep')
+
     for firm_name,firm_perf in df_firm_perf.iterrows():
         
         #count number of recommendations
@@ -655,23 +709,25 @@ if __name__ == '__main__':
     #Tests
 
     #get recommendations of firms for stocks with 50 billion market cap or more
-    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=200e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test11.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=12,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 20,'Hold': 20,'Buy': 20},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test1.csv',get_upgrade_downgrade=False,verbose=True)
 
     #get recommendations of firms for stocks with 10 billion to 20 billion market cap
-    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=10e3,mktcap_max=20e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test2.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=10e3,mktcap_max=20e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell': 10,'Hold': 10,'Buy': 10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test2.csv',get_upgrade_downgrade=False,verbose=True)
     
     #get recommendations of firms for stocks with 1 billion market cap or more, and in Basic Industries Sector
-    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=1e3,sectors=SectorConstants.BASICS),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test3.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=1e3,sectors=SectorConstants.BASICS),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test3.csv',get_upgrade_downgrade=False,verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using a performance test period of 12
-    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=12,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test4.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=12,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test4.csv',get_upgrade_downgrade=False,verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using no early stop
-    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test5.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='geometric mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test5.csv',get_upgrade_downgrade=False,verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using 'mean' metric
-    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test6.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=False,data_type='price',metric='mean',min_recommendations={'Sell':10,'Hold':10,'Buy':10},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test6.csv',get_upgrade_downgrade=False,verbose=True)
     
     #get recommendations of firms for stocks with 50 billion market cap or more, using convert type 'normal'
-    #measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Strong Sell': 0,'Sell':10,'Hold':10,'Buy':10,'Strong Buy': 0},convert_type='normal',save='analyst_recommendation_performance/TestResults/Test7.csv',verbose=True)
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=50e3),start='2012-01-01',end='2020-01-01',performance_test_period=24,early_stop=True,data_type='price',metric='geometric mean',min_recommendations={'Strong Sell': 0,'Sell':10,'Hold':10,'Buy':10,'Strong Buy': 0},convert_type='normal',save='analyst_recommendation_performance/TestResults/Test7.csv',get_upgrade_downgrade=False,verbose=True)
     
+    #get recommendations of firms for stocks with 20 billion market cap or more, ealy_stop is true, show upgrade downgrade
+    measure_firm_performance(tickers=get_tickers_filtered(mktcap_min=20e3),start='2012-01-01',end='2020-01-01',performance_test_period=12,early_stop=False,data_type='price',metric='geometric mean',min_recommendations={'Sell': 30,'Hold': 30,'Buy': 30},convert_type='simple',save='analyst_recommendation_performance/TestResults/Test8.csv',get_upgrade_downgrade=True,verbose=True)
