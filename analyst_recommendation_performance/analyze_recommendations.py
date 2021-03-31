@@ -183,7 +183,7 @@ def calculate_performance(data,performance_test_period,date,next_date,firm,to_gr
     elif end_date > data.iloc[-1]['Date']:
         return None
 
-    #get difference in seconds between start date and data dates
+    #get difference in seconds between start date and end dates
     data['dif_start_date'] = abs(data['Date'] - start_date)
     data['dif_end_date'] = abs(data['Date'] - end_date)
 
