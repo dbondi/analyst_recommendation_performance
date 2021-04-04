@@ -3,7 +3,7 @@ from matplotlib import transforms as mtransforms
 from matplotlib.ticker import FixedLocator, FuncFormatter
 import numpy as np
 
-#used to scale graph according to np.log(x+1) instead of 'log' scale option
+#used to scale cdf graph
 class CustomScale(mscale.ScaleBase):
     name = 'custom'
 

@@ -9,8 +9,6 @@ from get_tickers import get_tickers_filtered,SectorConstants
 import matplotlib.patches as mpatches
 from matplotlib import pyplot as plt
 import matplotlib.ticker
-from datetime import date,datetime
-from dateutil.relativedelta import relativedelta
 from matplotlib import scale as mscale
 from custom_scale import CustomScale
 
