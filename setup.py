@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
   name = 'analyst_recommendation_performance',        
   packages = ['analyst_recommendation_performance'],   
-  version = '0.1',      
+  version = '1.0',      
   license='MIT',        
   description = 'Get the performance of analysts stock recommendation',  
   author = 'Daniel Bondi',             
   author_email = 'dbondi@wisc.edu', 
   url = 'https://github.com/dbondi/analyst_recommendation_performance',  
-  download_url = 'https://github.com/dbondi/analyst_recommendation_performance/archive/v_01.tar.gz',    
+  download_url = 'https://github.com/dbondi/analyst_recommendation_performance/archive/v_10.tar.gz',    
   keywords = ['STOCKS', 'ANALYSTS', 'PYTHON', 'RECOMMENDATIONS','TICKERS'],  
   install_requires=[          
           'dateutil.relativedelta',
