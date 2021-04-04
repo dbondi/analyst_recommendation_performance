@@ -94,8 +94,6 @@ graph_performance(graph_type='histogram',tickers=get_tickers_filtered(mktcap_min
 
 ## Params
 
-Since there are many parameters I will go into detail about each one below.
-
 ### tickers
 In order to get recommendations, one must specify which tickers they want the recommendation to come from. A larger set is preferable to get a large sample size of recommendations. I have included the library https://github.com/dbondi/get_all_tickers to make it easy to search for a large number of tickers based on various filters.
 ```
