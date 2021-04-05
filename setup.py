@@ -5,6 +5,7 @@ setup(
   version = '1.0',      
   license='MIT',        
   description = 'Get the performance of analysts stock recommendation',  
+  long_description= 'view docs at https://github.com/dbondi/analyst_recommendation_performance'
   author = 'Daniel Bondi',             
   author_email = 'dbondi@wisc.edu', 
   url = 'https://github.com/dbondi/analyst_recommendation_performance',  
