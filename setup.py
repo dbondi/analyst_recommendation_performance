@@ -2,17 +2,17 @@ from distutils.core import setup
 setup(
   name = 'analyst_recommendation_performance',        
   packages = ['analyst_recommendation_performance'],   
-  version = '1.3',      
+  version = '1.4',      
   license='MIT',        
   description = 'Get the performance of analysts stock recommendation',  
   long_description= 'view docs at https://github.com/dbondi/analyst_recommendation_performance',
   author = 'Daniel Bondi',             
   author_email = 'dbondi@wisc.edu', 
   url = 'https://github.com/dbondi/analyst_recommendation_performance',  
-  download_url = 'https://github.com/dbondi/analyst_recommendation_performance/archive/refs/tags/v1.3.tar.gz',    
+  download_url = 'https://github.com/dbondi/analyst_recommendation_performance/archive/refs/tags/v1.4.tar.gz',    
   keywords = ['STOCKS', 'ANALYSTS', 'PYTHON', 'RECOMMENDATIONS','TICKERS'],  
   install_requires=[          
-          'dateutil',
+          'python-dateutil',
           'matplotlib',
           'yfinance'
           'numpy',
