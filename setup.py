@@ -1,12 +1,7 @@
-from distutils.core import setup
+from setuptools import setup
 setup(
   name = 'analyst_recommendation_performance',        
-  packages = ['analyst_recommendation_performance',
-              'analyst_recommendation_performance.analyze_recommendations',
-              'analyst_recommendation_performance.custom_scale',
-              'analyst_recommendation_performance.get_recommendations',
-              'analyst_recommendation_performance.get_stock_data',
-              'analyst_recommendation_performance.get_tickers'],   
+  packages = ['analyst_recommendation_performance'],   
   version = '0.1',      
   license='MIT',        
   description = 'Get the performance of analysts stock recommendation',  

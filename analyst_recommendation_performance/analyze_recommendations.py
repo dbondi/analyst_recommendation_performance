@@ -1,16 +1,16 @@
+from .get_stock_data import get_historical_market_data
+from .get_recommendations import get_recommendations,get_convert_type_keys
+from .get_tickers import get_tickers_filtered,SectorConstants
+from .custom_scale import CustomScale
 import yfinance as yf
-from get_stock_data import get_historical_market_data
-from get_recommendations import get_recommendations,get_convert_type_keys
 from datetime import date,datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 import numpy as np
-from get_tickers import get_tickers_filtered,SectorConstants
 import matplotlib.patches as mpatches
 from matplotlib import pyplot as plt
 import matplotlib.ticker
 from matplotlib import scale as mscale
-from custom_scale import CustomScale
 
 def get_recommendations_performance(tickers,start,end,performance_test_period,early_stop,data_type,convert_type,get_upgrade_downgrade,verbose):
 
