@@ -1,4 +1,4 @@
-from setuptools import setup
+from distutils.core import setup
 setup(
   name = 'analyst_recommendation_performance',        
   packages = ['analyst_recommendation_performance',

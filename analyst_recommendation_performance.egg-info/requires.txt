@@ -1,5 +1,0 @@
-python-dateutil
-matplotlib
-yfinance
-numpy
-pandas
