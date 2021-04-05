@@ -6,6 +6,10 @@ Knowing whether or not to heed the advice of a stock analyst when they downgrade
 
 The ratings and pricing data are acquired by using the https://github.com/ranaroussi/yfinance library which scrapes ratings that appear on yahoo finance.
 
+# Download
+```
+pip install analyst_recommendation_performance
+```
 ## Methods and Classes
 
 ### measure_firm_performance
