@@ -1,12 +1,12 @@
 Metadata-Version: 1.1
 Name: analyst-recommendation-performance
-Version: 0.2
+Version: 0.3
 Summary: Get the performance of analysts stock recommendation
 Home-page: https://github.com/dbondi/analyst_recommendation_performance
 Author: Daniel Bondi
 Author-email: dbondi@wisc.edu
 License: MIT
-Download-URL: https://github.com/dbondi/analyst_recommendation_performance/archive/refs/tags/v0.2.tar.gz
+Download-URL: https://github.com/dbondi/analyst_recommendation_performance/archive/refs/tags/v0.3.tar.gz
 Description: view docs at https://github.com/dbondi/analyst_recommendation_performance
 Keywords: STOCKS,ANALYSTS,PYTHON,RECOMMENDATIONS,TICKERS
 Platform: UNKNOWN
