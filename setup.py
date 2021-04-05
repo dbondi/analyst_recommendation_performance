@@ -8,7 +8,7 @@ setup(
   author = 'Daniel Bondi',             
   author_email = 'dbondi@wisc.edu', 
   url = 'https://github.com/dbondi/analyst_recommendation_performance',  
-  download_url = 'https://github.com/dbondi/analyst_recommendation_performance/archive/v_10.tar.gz',    
+  download_url = 'https://github.com/dbondi/analyst_recommendation_performance/archive/refs/tags/v1.0.tar.gz',    
   keywords = ['STOCKS', 'ANALYSTS', 'PYTHON', 'RECOMMENDATIONS','TICKERS'],  
   install_requires=[          
           'dateutil.relativedelta',
